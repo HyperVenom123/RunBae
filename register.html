@@ -14,6 +14,7 @@
       --consent-bg: linear-gradient(180deg, #4d1f1f, #642a2a);
       --gold: #FFD700;
       --silver: #C0C0C0;
+      --success-glow: 0 0 15px #FFD700, 0 0 30px #FF9900, 0 0 45px #FF5500;
     }
     
     * {
@@ -216,7 +217,7 @@
                 0 0 20px #e64a19;
     }
 
-    /* Fireworks container */
+    /* Fireworks container - positioned to overlap form */
     .fireworks-container {
       position: fixed;
       top: 0;
@@ -224,22 +225,22 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 0;
+      z-index: 1000;
     }
 
-    /* Celebration popup - Made more responsive */
+    /* Celebration popup - positioned above fireworks */
     .celebration-popup {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) scale(0);
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       padding: 20px;
       border-radius: 15px;
       text-align: center;
       z-index: 1000;
-      box-shadow: 0 0 30px gold, 0 0 60px rgba(255, 215, 0, 0.5);
-      border: 2px solid gold;
+      box-shadow: var(--success-glow);
+      border: 3px solid #FF9900;
       width: 80%;
       max-width: 300px;
       opacity: 0;
@@ -284,13 +285,6 @@
       border-radius: 0;
     }
 
-    .countdown {
-      font-size: 0.9rem;
-      color: var(--gold);
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
@@ -324,7 +318,7 @@
     .runner-number {
       font-size: 2rem;
       color: var(--gold);
-      text-shadow: 0 0 15px var(--gold);
+      text-shadow: 0 0 15px var(--gold), 0 0 25px #FF9900;
       margin: 5px 0;
       animation: pulse 1s infinite;
     }
@@ -370,10 +364,6 @@
       
       .winner-badge i {
         font-size: 1.5rem;
-      }
-      
-      .countdown {
-        font-size: 0.8rem;
       }
       
       body {
@@ -439,7 +429,6 @@
     <p>You are our</p>
     <div class="runner-number" id="runnerNumber">100</div>
     <p>Runner!</p>
-    <div class="countdown">Redirecting in <span id="countdownValue">5</span> seconds</div>
   </div>
   
   <div class="tap-message" id="tapMessage" style="display: none;">
@@ -491,8 +480,8 @@
             </select>
           </div>
           <div class="field">
-            <label>Age *</label>
-            <input type="number" name="age" placeholder="13" min="13" required>
+            <label>Age</label>
+            <input type="number" name="age" placeholder="Enter your age">
           </div>
         </div>
 
@@ -520,18 +509,17 @@
       const form = document.getElementById("runForm");
       const celebrationPopup = document.getElementById("celebrationPopup");
       const runnerNumberEl = document.getElementById("runnerNumber");
-      const countdownValue = document.getElementById("countdownValue");
       const tapMessage = document.getElementById("tapMessage");
       
-      // Initialize enhanced fireworks with mobile-optimized settings
+      // Initialize enhanced fireworks
       const fireworksContainer = document.querySelector('.fireworks-container');
       const fireworks = new Fireworks.default(fireworksContainer, {
         autoresize: true,
-        opacity: 0.3,  // Increased opacity for better visibility on mobile
+        opacity: 0.3,
         acceleration: 1.15,
         friction: 0.97,
-        gravity: 1.0,  // Reduced gravity for better mobile display
-        particles: 100,  // Slightly reduced for mobile performance
+        gravity: 1.0,
+        particles: 100,
         traceLength: 4,
         traceSpeed: 12,
         explosion: 7,
@@ -547,13 +535,13 @@
           max: 40
         },
         rocketsPoint: {
-          min: 20,  // Adjusted for better mobile display
+          min: 20,
           max: 80
         },
         lineWidth: {
           explosion: {
             min: 2,
-            max: 4    // Slightly thicker for better visibility
+            max: 4
           },
           trace: {
             min: 1,
@@ -568,7 +556,7 @@
       // Create confetti effect
       function createConfetti() {
         const colors = ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FFFFFF', '#FF00FF', '#00FFFF'];
-        for (let i = 0; i < 20; i++) {  // Reduced number for mobile performance
+        for (let i = 0; i < 20; i++) {
           const confetti = document.createElement('div');
           confetti.className = 'confetti';
           confetti.style.left = Math.random() * 100 + '%';
@@ -596,7 +584,6 @@
         e.preventDefault(); // stop normal form submission
 
         // For demo purposes, let's assume every registration is the 100th+ runner
-        // In a real scenario, you'd check against your actual registration count
         const isSpecialRunner = true;
         
         if (isSpecialRunner) {
@@ -618,18 +605,6 @@
           
           // Show tap message
           tapMessage.style.display = 'block';
-          
-          // Start countdown timer
-          let countdown = 5;
-          const countdownInterval = setInterval(() => {
-            countdownValue.textContent = countdown;
-            countdown--;
-            
-            if (countdown < 0) {
-              clearInterval(countdownInterval);
-              redirectToForm();
-            }
-          }, 1000);
           
           // Add click event to redirect when user taps anywhere
           document.addEventListener('click', redirectToForm);
