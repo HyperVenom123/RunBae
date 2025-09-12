@@ -227,7 +227,7 @@
       z-index: 0;
     }
 
-    /* Celebration popup */
+    /* Celebration popup - Made more responsive */
     .celebration-popup {
       position: fixed;
       top: 50%;
@@ -240,7 +240,7 @@
       z-index: 1000;
       box-shadow: 0 0 30px gold, 0 0 60px rgba(255, 215, 0, 0.5);
       border: 2px solid gold;
-      width: 50%;
+      width: 80%;
       max-width: 300px;
       opacity: 0;
       transition: all 0.5s ease-out;
@@ -254,7 +254,7 @@
 
     .celebration-popup h2 {
       color: var(--gold);
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       margin-bottom: 10px;
       text-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold);
       animation: pulse 2s infinite;
@@ -262,13 +262,13 @@
 
     .celebration-popup p {
       color: white;
-      font-size: 1rem;
+      font-size: 0.9rem;
       margin-bottom: 10px;
       line-height: 1.4;
     }
 
     .celebration-popup .icon {
-      font-size: 2.5rem;
+      font-size: 2rem;
       margin-bottom: 10px;
       color: var(--gold);
       text-shadow: 0 0 10px var(--gold);
@@ -277,8 +277,8 @@
 
     .celebration-popup .confetti {
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       background-color: var(--gold);
       opacity: 0.8;
       border-radius: 0;
@@ -303,8 +303,8 @@
     }
 
     .winner-badge {
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
       margin: 0 auto 10px;
       background: radial-gradient(circle, var(--gold) 40%, var(--silver) 100%);
       border-radius: 50%;
@@ -317,12 +317,12 @@
     }
 
     .winner-badge i {
-      font-size: 2.5rem;
+      font-size: 1.8rem;
       color: #000;
     }
 
     .runner-number {
-      font-size: 2.5rem;
+      font-size: 2rem;
       color: var(--gold);
       text-shadow: 0 0 15px var(--gold);
       margin: 5px 0;
@@ -346,6 +346,71 @@
       0% { opacity: 0.7; }
       50% { opacity: 1; }
       100% { opacity: 0.7; }
+    }
+
+    /* Mobile-specific adjustments */
+    @media (max-width: 768px) {
+      .celebration-popup {
+        width: 85%;
+        padding: 15px;
+      }
+      
+      .celebration-popup h2 {
+        font-size: 1.3rem;
+      }
+      
+      .runner-number {
+        font-size: 1.8rem;
+      }
+      
+      .winner-badge {
+        width: 50px;
+        height: 50px;
+      }
+      
+      .winner-badge i {
+        font-size: 1.5rem;
+      }
+      
+      .countdown {
+        font-size: 0.8rem;
+      }
+      
+      body {
+        padding: 15px;
+      }
+      
+      .form-card {
+        padding: 18px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .celebration-popup {
+        width: 90%;
+        padding: 12px;
+      }
+      
+      .celebration-popup h2 {
+        font-size: 1.2rem;
+      }
+      
+      .runner-number {
+        font-size: 1.6rem;
+      }
+      
+      .winner-badge {
+        width: 45px;
+        height: 45px;
+      }
+      
+      .winner-badge i {
+        font-size: 1.3rem;
+      }
+      
+      .celebration-popup p {
+        font-size: 0.8rem;
+      }
     }
   </style>
 
@@ -458,41 +523,41 @@
       const countdownValue = document.getElementById("countdownValue");
       const tapMessage = document.getElementById("tapMessage");
       
-      // Initialize enhanced fireworks
+      // Initialize enhanced fireworks with mobile-optimized settings
       const fireworksContainer = document.querySelector('.fireworks-container');
       const fireworks = new Fireworks.default(fireworksContainer, {
         autoresize: true,
-        opacity: 0.2,
-        acceleration: 1.10,
-        friction: 0.96,
-        gravity: 1.2,
-        particles: 150,  // Increased particles
-        traceLength: 5,  // Increased trace length
-        traceSpeed: 15,  // Increased speed
-        explosion: 8,    // Increased explosion size
-        intensity: 50,   // Increased intensity
-        flickering: 60,  // Increased flickering
+        opacity: 0.3,  // Increased opacity for better visibility on mobile
+        acceleration: 1.15,
+        friction: 0.97,
+        gravity: 1.0,  // Reduced gravity for better mobile display
+        particles: 100,  // Slightly reduced for mobile performance
+        traceLength: 4,
+        traceSpeed: 12,
+        explosion: 7,
+        intensity: 40,
+        flickering: 50,
         lineStyle: 'round',
         hue: {
           min: 0,
           max: 360
         },
         delay: {
-          min: 15,      // More frequent fireworks
-          max: 45
+          min: 20,
+          max: 40
         },
         rocketsPoint: {
-          min: 30,
-          max: 70
+          min: 20,  // Adjusted for better mobile display
+          max: 80
         },
         lineWidth: {
           explosion: {
-            min: 2,     // Thicker explosion lines
-            max: 5
+            min: 2,
+            max: 4    // Slightly thicker for better visibility
           },
           trace: {
             min: 1,
-            max: 3      // Thicker trace lines
+            max: 2
           }
         }
       });
@@ -503,7 +568,7 @@
       // Create confetti effect
       function createConfetti() {
         const colors = ['#FFD700', '#FF0000', '#00FF00', '#0000FF', '#FFFFFF', '#FF00FF', '#00FFFF'];
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 20; i++) {  // Reduced number for mobile performance
           const confetti = document.createElement('div');
           confetti.className = 'confetti';
           confetti.style.left = Math.random() * 100 + '%';
@@ -519,6 +584,12 @@
         fireworks.stop();
         celebrationPopup.classList.remove('show');
         tapMessage.style.display = 'none';
+        
+        // Clear the form
+        form.reset();
+        
+        // Remove any existing click event listener
+        document.removeEventListener('click', redirectToForm);
       }
 
       form.addEventListener("submit", function(e){
@@ -544,6 +615,9 @@
           
           // Start enhanced fireworks
           fireworks.start();
+          
+          // Show tap message
+          tapMessage.style.display = 'block';
           
           // Start countdown timer
           let countdown = 5;
@@ -571,7 +645,7 @@
           .then(res => res.text())
           .then(msg => {
             alert("✅ Registration successful!");
-            form.reset();
+            form.reset(); // Clear the form
           })
           .catch(err => alert("❌ Something went wrong, try again."));
         }
