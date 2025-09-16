@@ -580,51 +580,49 @@
         document.removeEventListener('click', redirectToForm);
       }
 
-      form.addEventListener("submit", function(e){
-        e.preventDefault(); // stop normal form submission
+		document.getElementById("runForm").addEventListener("submit", async function(e) {
+		  e.preventDefault();
 
-        // For demo purposes, let's assume every registration is the 100th+ runner
-        const isSpecialRunner = true;
-        
-        if (isSpecialRunner) {
-          // Update runner number
-          runnerNumber++;
-          localStorage.setItem('runnerNumber', runnerNumber);
-          
-          // Show the current runner number
-          runnerNumberEl.textContent = runnerNumber;
-          
-          // Show celebration popup with animation
-          celebrationPopup.classList.add('show');
-          
-          // Create confetti
-          createConfetti();
-          
-          // Start enhanced fireworks
-          fireworks.start();
-          
-          // Show tap message
-          tapMessage.style.display = 'block';
-          
-          // Add click event to redirect when user taps anywhere
-          document.addEventListener('click', redirectToForm);
-        } else {
-          // Normal form submission
-          const data = Object.fromEntries(new FormData(form));
+		  // Collect form data
+		  let formData = {
+			name: document.querySelector("input[name='fullName']").value,
+			phone: document.querySelector("input[name='phone']").value,
+			age: document.querySelector("input[name='age']").value,
+			gender: document.querySelector("select[name='gender']").value,
+			distance: document.querySelector("select[name='run']").value,
+			attendance: document.querySelector("select[name='attendance']").value,
+			medical: document.querySelector("textarea[name='medical']").value
+		  };
 
-          fetch("YOUR_WEB_APP_URL_HERE", {
-            method: "POST",
-            body: JSON.stringify(data),
-            headers: { "Content-Type": "application/json" }
-          })
-          .then(res => res.text())
-          .then(msg => {
-            alert("✅ Registration successful!");
-            form.reset(); // Clear the form
-          })
-          .catch(err => alert("❌ Something went wrong, try again."));
-        }
-      });
+		  try {
+			// Send data to Google Sheets Web App
+			await fetch("https://script.google.com/macros/s/AKfycbxHZXnPZZWyo7XekMycVjc-f7ST0bdIDl8GsnrbeC4rh2WbR3jI91tMzl2VUGcKgSE/exec", {
+			  method: "POST",
+			  body: JSON.stringify(formData),
+			  headers: {
+				"Content-Type": "application/json"
+			  }
+			});
+
+			// Show celebration popup + fireworks
+			celebrationPopup.classList.add('show');
+			createConfetti();
+			fireworks.start();
+			tapMessage.style.display = 'block';
+
+			// Increment runner number
+			runnerNumber++;
+			localStorage.setItem('runnerNumber', runnerNumber);
+			runnerNumberEl.textContent = runnerNumber;
+
+			// Add click event to redirect/close popup
+			document.addEventListener('click', redirectToForm);
+
+		  } catch (err) {
+			alert("❌ Something went wrong, please try again!");
+		  }
+		});
+
     });
   </script>
 </body>
