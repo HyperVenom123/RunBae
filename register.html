@@ -16,6 +16,8 @@
       --silver: #C0C0C0;
       --success-glow: 0 0 15px #FFD700, 0 0 30px #FF9900, 0 0 45px #FF5500;
     }
+
+
     
     * {
       font-family: "Fredoka", sans-serif;
@@ -182,6 +184,46 @@
                 0 0 10px #e64a19,
                 0 0 20px #e64a19;
     }
+    .loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(43, 26, 26, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: 14px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: #fff;
+}
+
+/* New CSS for the GIF */
+.spinner-gif {
+  width: 100px; /* Adjust the width as needed for your GIF */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Remove extra space below the image */
+  margin: 0 auto; /* Center the GIF */
+}
+
+.loading-text {
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #ccc;
+}
 
     /* Responsive adjustments */
     @media (max-width: 500px) {
@@ -401,6 +443,7 @@
       .celebration-popup p {
         font-size: 0.8rem;
       }
+      
     }
   </style>
 
@@ -498,6 +541,12 @@
             I understand that participating in running activities involves inherent risks and dangers of accidents, injury, and even death. I voluntarily assume all risks associated with participation and agree to hold harmless RunWay Running Club, its organizers, volunteers, and sponsors from any claims, demands, or causes of action arising from my participation. I certify that I am physically fit and have not been advised otherwise by a qualified medical professional.
           </p>
         </div>
+		<div class="loading-overlay" id="loadingOverlay">
+			  <div class="loading-spinner">
+				<img src="./New folder/Loading.gif" alt="Running animation" class="spinner-gif">
+				<div class="loading-text">Joining the squad...</div>
+			  </div>
+			</div>
 
         <button type="submit" class="submit-btn">Join the Squad</button>
       </form>
@@ -580,48 +629,52 @@
         document.removeEventListener('click', redirectToForm);
       }
 
-		document.getElementById("runForm").addEventListener("submit", async function(e) {
-		  e.preventDefault();
+// Delta Code: Update your existing script block
 
-		  // Collect form data
-		  let formData = {
-			name: document.querySelector("input[name='fullName']").value,
-			phone: document.querySelector("input[name='phone']").value,
-			age: document.querySelector("input[name='age']").value,
-			gender: document.querySelector("select[name='gender']").value,
-			distance: document.querySelector("select[name='run']").value,
-			attendance: document.querySelector("select[name='attendance']").value,
-			medical: document.querySelector("textarea[name='medical']").value
-		  };
+document.getElementById("runForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
 
-		  try {
-			// Send data to Google Sheets Web App
-			await fetch("https://script.google.com/macros/s/AKfycbxHZXnPZZWyo7XekMycVjc-f7ST0bdIDl8GsnrbeC4rh2WbR3jI91tMzl2VUGcKgSE/exec", {
-			  method: "POST",
-			  body: JSON.stringify(formData),
-			  headers: {
-				"Content-Type": "application/json"
-			  }
-			});
+  const submitBtn = e.target.querySelector('.submit-btn');
+  const loadingOverlay = document.getElementById("loadingOverlay");
 
-			// Show celebration popup + fireworks
-			celebrationPopup.classList.add('show');
-			createConfetti();
-			fireworks.start();
-			tapMessage.style.display = 'block';
+  // Show loading state
+  submitBtn.disabled = true;
+  loadingOverlay.classList.add('visible');
 
-			// Increment runner number
-			runnerNumber++;
-			localStorage.setItem('runnerNumber', runnerNumber);
-			runnerNumberEl.textContent = runnerNumber;
+  // Use FormData for simple POST requests that don't trigger CORS preflight
+  const formData = new FormData(e.target);
+  const data = new URLSearchParams();
+  for (const [key, value] of formData.entries()) {
+    data.append(key, value);
+  }
+  
+  try {
+    // Send data to Google Sheets Web App
+			await fetch("https://script.google.com/macros/s/AKfycbySy46q9t5oNVAmlCdThwNBQtAwPdY311zEGgCmcI5d5DC3GMrn0SAedhGVCqQgnEpj/exec", {
+      method: "POST",
+      body: data,
+    });
 
-			// Add click event to redirect/close popup
-			document.addEventListener('click', redirectToForm);
+    // Handle success
+    celebrationPopup.classList.add('show');
+    createConfetti();
+    fireworks.start();
+    tapMessage.style.display = 'block';
 
-		  } catch (err) {
-			alert("❌ Something went wrong, please try again!");
-		  }
-		});
+    runnerNumber++;
+    localStorage.setItem('runnerNumber', runnerNumber);
+    runnerNumberEl.textContent = runnerNumber;
+
+    document.addEventListener('click', redirectToForm);
+
+  } catch (err) {
+    alert("❌ Something went wrong, please try again!");
+  } finally {
+    // Hide loading state regardless of success or failure
+    submitBtn.disabled = false;
+    loadingOverlay.classList.remove('visible');
+  }
+});
 
     });
   </script>
